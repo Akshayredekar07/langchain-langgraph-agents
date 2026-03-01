@@ -1,0 +1,65 @@
+# ---- Secrets & local config ----
+.env
+.env.*
+!.env.example
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.python-version
+.venv/
+venv/
+ENV/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.ipynb_checkpoints/
+
+# ---- Jupyter / notebooks ----
+*.nbconvert.ipynb
+
+# ---- Build / packaging ----
+build/
+dist/
+site/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# ---- JS / TS / Turbo / PNPM ----
+node_modules/
+.turbo/
+.pnpm-store/
+.npm/
+.yarn/
+.yarn-cache/
+.parcel-cache/
+.cache/
+.next/
+.nuxt/
+.svelte-kit/
+coverage/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---- Tool caches in this repo ----
+.uv-cache/
+.tmp/
+**/.langgraph_api/
+*.pckl
+
+# ---- OS / editor noise ----
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

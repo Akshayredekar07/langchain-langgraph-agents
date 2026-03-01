@@ -1,0 +1,79 @@
+# LangChain core
+langchain
+langchain-core
+langchain-community
+langchain-text-splitters
+langchain-chroma
+langgraph
+
+# OpenAI integration
+langchain-openai
+openai
+
+# Anthropic integration
+langchain-anthropic
+
+# Google Gemini (PaLM) integration
+langchain-google-genai
+google-generativeai
+
+# Hugging Face integration
+langchain-huggingface
+transformers
+huggingface_hub
+sentence_transformers
+
+# Grok integration
+langchain-groq
+
+# Environment variable management
+python-dotenv
+
+# Machine learning utilities
+numpy
+scikit-learn
+
+
+# Web server and API
+fastapi
+uvicorn
+sse_starlette
+multidict
+
+# Miscellaneous
+ipykernel
+ipywidgets
+numexpr
+pydantic
+
+
+mcp
+mcp-server
+fastapi
+uvicorn
+watchfiles
+importlib-metadata
+zipp
+yarl
+
+
+langchain-tavily
+mcp
+fastmcp 
+langchain-mcp-adapters
+
+
+# ui
+langchain
+langchain-groq
+python-dotenv
+langgraph-cli[inmem]
+
+# pip install -U "langgraph-cli[inmem]"
+langchain
+langchain-groq
+python-dotenv
+langgraph-cli[inmem]>=0.1.55
+
+uuid-utils==0.14.1
+langchain-tavily

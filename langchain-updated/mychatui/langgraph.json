@@ -1,0 +1,11 @@
+{
+  "node_version": "20",
+  "dependencies": [
+    "."
+  ],
+  "graphs": {
+    "agent": "../../examples/agent.py:agent"
+  },
+  "env": ".env"
+}
+
