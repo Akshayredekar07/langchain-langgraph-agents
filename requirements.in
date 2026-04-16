@@ -10,12 +10,9 @@ langgraph
 langchain-openai
 openai
 
-langchain-nebius
-
 # Anthropic integration
 langchain-anthropic
 
-langchain-cerebras
 # Openrouter integration
 langchain-openrouter
 
@@ -88,4 +85,3 @@ langgraph-cli
 uuid-utils
 langchain-tavily
 ipykernel
-pip
