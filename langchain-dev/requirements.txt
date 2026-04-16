@@ -1,0 +1,11 @@
+langchain
+langchain-openai
+langchain-anthropic
+langchain-google-genai
+langchain-groq
+langchain-cerebras
+langchain-nvidia-ai-endpoints
+langchain-nebius
+langchain-openrouter
+langchain-huggingface
+python-dotenv
