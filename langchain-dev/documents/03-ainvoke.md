@@ -8,6 +8,7 @@
 It does the exact same thing — sends a message, waits for the full response, returns an `AIMessage` — but it does it **without blocking** the event loop.
 
 Use `ainvoke` when:
+
 - You are inside an `async def` function
 - You want to run multiple model calls concurrently with `asyncio.gather`
 - You are building a FastAPI / async web server
@@ -139,14 +140,16 @@ print(response.response_metadata)  # model name, finish_reason, etc.
 
 ## `invoke` vs `ainvoke` — Quick Comparison
 
-| | `invoke` | `ainvoke` |
-|---|---|---|
-| Syntax | `model.invoke(...)` | `await model.ainvoke(...)` |
-| Blocking | Yes — blocks until done | No — yields control to event loop |
-| Return type | `AIMessage` | `AIMessage` (identical) |
-| Use in async def | Works but not ideal | Preferred |
-| Parallel calls | Use `batch()` | Use `asyncio.gather` |
-| Notebook | Works directly | Use `await` directly |
+
+|                  | `invoke`                | `ainvoke`                         |
+| ---------------- | ----------------------- | --------------------------------- |
+| Syntax           | `model.invoke(...)`     | `await model.ainvoke(...)`        |
+| Blocking         | Yes — blocks until done | No — yields control to event loop |
+| Return type      | `AIMessage`             | `AIMessage` (identical)           |
+| Use in async def | Works but not ideal     | Preferred                         |
+| Parallel calls   | Use `batch()`           | Use `asyncio.gather`              |
+| Notebook         | Works directly          | Use `await` directly              |
+
 
 ---
 
@@ -160,3 +163,4 @@ Just use `await` at the top level of a cell:
 response = await model.ainvoke("Hello")
 print(response.content)
 ```
+
