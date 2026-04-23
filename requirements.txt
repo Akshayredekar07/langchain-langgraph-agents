@@ -89,3 +89,7 @@ uuid-utils
 langchain-tavily
 ipykernel
 pip
+
+deepagents==0.5.3
+
+
