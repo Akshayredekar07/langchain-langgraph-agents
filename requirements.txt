@@ -1,4 +1,4 @@
-# LangChain core
+# Core (pinned latest stable)
 langchain
 langchain-core
 langchain-community
@@ -6,90 +6,45 @@ langchain-text-splitters
 langchain-chroma
 langgraph
 
-# OpenAI integration
+# LLM Providers
 langchain-openai
-openai
-
 langchain-nebius
-
-# Anthropic integration
 langchain-anthropic
-
 langchain-cerebras
-# Openrouter integration
 langchain-openrouter
-
-# Nvidia integration
 langchain-nvidia-ai-endpoints
-
-# Google Gemini (PaLM) integration
 langchain-google-genai
-google-generativeai
-
-# Hugging Face integration
 langchain-huggingface
-transformers
-huggingface_hub
-sentence_transformers
-
-# Grok integration
 langchain-groq
+langchain-tavily
 
-# Environment variable management
-python-dotenv
-
-# Machine learning utilities
+# ML/HF
+transformers
+huggingface-hub
+sentence-transformers
 numpy
 scikit-learn
 
-
-# Web server and API
+# MCP/FastAPI Server
 fastapi
-uvicorn
-sse_starlette
-multidict
-
-# Miscellaneous
-ipykernel
-ipywidgets
-numexpr
+uvicorn[standard]
+sse-starlette
+mcp
+fastmcp
+langchain-mcp-adapters
+watchfiles
+yarl
 pydantic
 
-
-mcp
-mcp-server
-fastapi
-uvicorn
-watchfiles
-importlib-metadata
-zipp
-yarl
-
-
-langchain-tavily
-mcp
-fastmcp 
-langchain-mcp-adapters
-
-
-# ui
-langchain
-langchain-groq
+# Utils/Env
 python-dotenv
-langgraph-cli
-gradio
-
-# pip install -U "langgraph-cli[inmem]"
-langchain
-langchain-groq
-python-dotenv
-langgraph-cli
-
-uuid-utils
-langchain-tavily
-ipykernel
-pip
-
 deepagents==0.5.3
+uuid-utils
+typing-extensions
+numexpr
 
-
+# Dev/UI/Jupyter
+ipykernel
+ipywidgets
+gradio
+langgraph-cli[inmem]

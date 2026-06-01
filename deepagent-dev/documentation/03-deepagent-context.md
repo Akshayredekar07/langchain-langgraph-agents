@@ -771,7 +771,7 @@ This creates a **compounding knowledge loop** across sessions. Enable it in Clau
 
 ### The Full Ecosystem
 
-```
+```js
 Project
 ├── CLAUDE.md           ← Claude Code specific. Always loaded.
 ├── AGENTS.md           ← Agent-agnostic. Always loaded by most tools.
