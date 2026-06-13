@@ -1,0 +1,15 @@
+# Core dependencies
+boto3
+python-dotenv
+pydantic
+langchain-core
+langchain-anthropic
+
+# Sandbox script dependencies (PDF, DOCX, PPTX generation)
+Markdown
+pdfkit
+python-docx
+python-pptx
+xhtml2pdf 
+# System dependency for PDF output:
+# Install wkhtmltopdf and put wkhtmltopdf.exe on PATH, or set DOC_WKHTMLTOPDF_PATH.
