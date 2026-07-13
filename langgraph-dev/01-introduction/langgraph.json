@@ -1,0 +1,7 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "social_content_workflow": "./06_combined_workflow.py:workflow"
+  },
+  "env": ".env"
+}

@@ -1,10 +1,15 @@
-# Core (pinned latest stable)
+# Core
 langchain
 langchain-core
 langchain-community
 langchain-text-splitters
 langchain-chroma
 langgraph
+langgraph-checkpoint
+langgraph-prebuilt
+langgraph-sdk
+langchain-protocol
+langsmith
 
 # LLM Providers
 langchain-openai
@@ -18,14 +23,14 @@ langchain-huggingface
 langchain-groq
 langchain-tavily
 
-# ML/HF
+# ML / Hugging Face
 transformers
 huggingface-hub
 sentence-transformers
 numpy
 scikit-learn
 
-# MCP/FastAPI Server
+# MCP / FastAPI Server
 fastapi
 uvicorn[standard]
 sse-starlette
@@ -36,14 +41,25 @@ watchfiles
 yarl
 pydantic
 
-# Utils/Env
+# Networking & Serialization
+requests
+urllib3
+certifi
+idna
+orjson
+websockets
+anyio
+
+# Utils
 python-dotenv
 deepagents==0.5.3
 uuid-utils
 typing-extensions
 numexpr
+xxhash
 
-# Dev/UI/Jupyter
+# Dev / UI / Jupyter
+ipython
 ipykernel
 ipywidgets
 gradio
