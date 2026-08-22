@@ -1,139 +1,88 @@
-# LLM / AI Gateways: Research
+# LLM / AI Gateways: Learning Plan
 
-Research date: August 22, 2026
-
----
-
-## Part 1: What an LLM Gateway Actually Does
-
-An LLM gateway sits between your application and the model providers (OpenAI, Anthropic, Bedrock, Vertex, Groq, and so on). It gives you:
-
-- One endpoint and one API format instead of many SDKs
-- Routing, load balancing, and automatic fallback when a provider fails or rate limits you
-- Cost tracking and budget limits per team, project, or user
-- Caching (exact and semantic) so repeated prompts do not cost twice
-- Guardrails: PII filtering, content moderation, prompt injection checks
-- Observability: logs, traces, spend dashboards
-- Virtual keys and access control instead of sharing raw provider keys
-
-This is infrastructure, not a framework like LangChain. LangChain helps you build the agent logic. A gateway helps you run that logic reliably in production across many models and teams.
+Companion to `llm-gateways-research.md`. Read the research doc first for context on what a gateway is, how LiteLLM works, and how `langchain-litellm` fits in.
 
 ---
 
-## Part 2: Top 20 Popular LLM/AI Gateways, by Category
+## How This Plan Works
 
-### Category A: Open source, self-hosted (you run the control plane)
+Each stage below adds one gateway capability as its own small project, building on the previous stage. By the end you have one cumulative, production shaped system rather than ten disconnected scripts. This mirrors the "0 to 1, build from scratch" approach you already use in your other repos.
 
-1. **LiteLLM** (MIT license) — the most widely adopted open source gateway, over 40,000 GitHub stars, supports 100+ providers, Python SDK plus a proxy server. Core moved to a Rust core with Python SDK in 2026 for speed.
-2. **Bifrost** (Apache 2.0, by Maxim AI) — written in Go, positioned as the fastest option with sub microsecond overhead, native MCP support.
-3. **Portkey Gateway** — the gateway component became Apache 2.0 in March 2026, the managed platform around it stays proprietary.
-4. **LLM Gateway (llmgateway.io)** — fully open source, self-hostable, zero markup pricing.
-5. **Envoy AI Gateway** — Apache 2.0, CNCF-aligned, built on Envoy Proxy, Kubernetes native, reached its 1.0 stable release in 2026.
-6. **Apache APISIX (ai-proxy plugin)** — an established API gateway with AI plugins added for LLM traffic.
+### Stage 0: Foundations (no project, just setup)
+- Read how `litellm.completion()` normalizes requests across providers
+- Get free or trial keys for two providers (for example OpenAI and Groq, since Groq has a generous free tier)
+- Understand the difference between the SDK and the proxy before writing any code
 
-### Category B: Managed aggregators (hosted, you do not run infrastructure)
+### Stage 1 — Project: Single Interface, Multiple Providers
+- Use `litellm.completion()` to call OpenAI, then swap the model string to call Groq or Gemini, same function, no other code changes
+- Feature learned: unified API format
 
-7. **OpenRouter** — consolidated billing across a large model catalog, strong for prototyping.
-8. **Requesty** — managed multi-provider router with cost optimization focus.
-9. **Eden AI** — managed aggregator covering LLMs plus other AI APIs (OCR, speech, vision).
+### Stage 2 — Project: Fallback Chat CLI
+- Build a small command line chatbot that tries a primary model and automatically falls back to a secondary model on error or rate limit, using `litellm.completion()`'s built in fallback list
+- Feature learned: automatic failover
 
-### Category C: Smart routers (pick the best or cheapest model per request automatically)
+### Stage 3 — Project: Load Balanced Router
+- Use `litellm.Router` with multiple deployments of the same model (for example two API keys or two regions) and watch requests distribute across them
+- Feature learned: load balancing strategies (least busy, round robin, lowest cost)
 
-10. **Martian** — routes each request to the model that fits cost and quality targets.
-11. **Not Diamond** — similar automatic model selection approach.
-12. **Unify AI** — routing based on live benchmarks across providers.
+### Stage 4 — Project: Cost Tracker
+- Log the cost of every call using LiteLLM's built in cost calculation, write it to a local SQLite table, build a tiny script that reports spend by model
+- Feature learned: cost tracking at the SDK level, before touching the proxy
 
-### Category D: Cloud provider native gateways
+### Stage 5 — Project: Deploy the LiteLLM Proxy
+- Run the LiteLLM proxy with Docker, write a `config.yaml` with two or three models
+- Create your first virtual key from the admin UI, call the proxy from a plain `curl` request and from Python using the OpenAI SDK pointed at `http://localhost:4000`
+- Feature learned: the proxy is a real, separate service, and anything OpenAI-compatible works against it unmodified
 
-13. **AWS Bedrock** — less a traditional gateway, more a managed model access layer inside AWS.
-14. **Azure API Management (APIM) AI Gateway** — the most feature complete cloud native option: token based rate limits, semantic caching, circuit breakers, a unified model API in preview.
-15. **Google Vertex AI Model Garden** — Google's equivalent managed access layer.
-16. **Cloudflare AI Gateway** — edge cached proxy, near zero operational overhead, fits naturally if you already run on Cloudflare.
+### Stage 6 — Project: Team Budgets and Access Control
+- Add two virtual keys with different per-key budgets and rate limits on the proxy
+- Write a small script that intentionally exceeds one budget and shows the proxy blocking the request
+- Feature learned: multi-tenant governance
 
-### Category E: API gateway platforms extended for AI traffic
+### Stage 7 — Project: Guardrails
+- Add a PII filter guardrail and a content moderation guardrail to the proxy config
+- Send a request containing a fake PII string and confirm it is caught before reaching the model
+- Feature learned: pre-call and post-call guardrail hooks, including writing one custom guardrail class yourself
 
-17. **Kong AI Gateway** — extends Kong's existing API management platform with LLM routing and plugins, strongest if you already run Kong.
-18. **Zuplo** — API gateway vendor with AI specific policies added.
-19. **Vercel AI Gateway** — zero token markup, default provider for the Vercel AI SDK, GA since 2025.
+### Stage 8 — Project: Caching Layer
+- Stand up Redis, wire it into the proxy config for exact-match caching, then enable semantic caching
+- Send the same question phrased two different ways and confirm the second call is served from cache
+- Feature learned: cost reduction through caching, and the tradeoffs of semantic cache thresholds
 
-### Category F: Observability platforms that added gateway features
+### Stage 9 — Project: Observability
+- Connect the proxy to Langfuse (a tool you already use) so every request, cost, and latency number shows up in a trace dashboard
+- Feature learned: production observability, which also strengthens your existing LangFuse experience for your resume
 
-20. **Braintrust Gateway** and **Helicone** — both started as LLM observability/eval platforms and added routing on top. Note: Helicone was acquired by Mintlify in 2026 and is now in maintenance mode rather than active development, worth knowing if you are picking a tool to learn long term.
-
-**Where LiteLLM sits:** it is consistently ranked as either the most popular or the default open source pick across nearly every 2026 comparison. It is the best starting point to learn because it is free, self-hostable, has the largest community, and its concepts (virtual keys, routing, fallback, guardrails) transfer directly to every other gateway on this list.
-
----
-
-## Part 3: LiteLLM Deep Dive
-
-LiteLLM ships as two things, and this distinction matters for your learning plan:
-
-### 3.1 The SDK (Python library, in-process)
-- `litellm.completion()` and `litellm.acompletion()` call 100+ providers through one function signature, same shape as the OpenAI SDK
-- `litellm.Router` gives you load balancing, retries, and fallback across deployments without running a separate server
-- Good for: scripts, notebooks, small services where you do not want a standalone proxy process
-
-### 3.2 The Proxy (self-hosted server, the real gateway)
-- A FastAPI (now Rust-core-backed) server you deploy with Docker
-- OpenAI-compatible REST API, so anything built for the OpenAI API works against it unchanged, including LangChain, LlamaIndex, Claude Code, Cursor
-- Admin dashboard UI, virtual key management, per-team and per-project budgets
-- Guardrails: PII filters, content moderation, prompt injection detection, pluggable custom guardrail classes, and load balancing across multiple guardrail providers
-- Caching: exact match and semantic caching, backed by Redis, S3, or GCS
-- Cost tracking stored in PostgreSQL, live sync of a model price and context window map so new models are supported day zero
-- Enterprise edition (paid) adds SSO/SAML, RBAC, audit logs, per-project budget isolation
-
-### 3.3 Feature comparison snapshot against the rest of the market
-
-| Feature | LiteLLM | Bifrost | Portkey | Cloudflare AI Gateway | Kong AI Gateway |
-|---|---|---|---|---|---|
-| Self-hosted, open source core | Yes | Yes | Gateway only | No | Depends on Kong deployment |
-| License | MIT | Apache 2.0 | Apache 2.0 (gateway) | Proprietary managed | Mixed |
-| Provider count | 100+ | Broad | Broad | Multiple | Broad via plugins |
-| Virtual keys, budgets | Yes | Yes | Yes | Limited | Yes |
-| Guardrails | Yes, pluggable | Yes | Yes | Basic | Yes, plugin based |
-| Semantic caching | Yes | Yes | Yes | Basic caching | Depends on plugin |
-| MCP support | Yes | Native, strong | Growing | Limited | Growing |
-| Best fit | General purpose, largest community | Lowest latency, enterprise governance | Managed platform with enterprise polish | Teams already on Cloudflare | Teams already running Kong |
-
-A fact worth knowing rather than hiding from: LiteLLM has had real security incidents, including a March 2026 supply chain issue where two published versions carried credential harvesting malware. The fix pattern (pin to `-stable` releases, keep the proxy network isolated, rotate keys, verify package integrity before upgrading) is itself a good thing to practice, since production gateway security is a real skill.
+### Stage 10 — Project: LangChain Integration, Both Paths
+- Part A: use `ChatLiteLLMRouter` from `langchain-litellm` directly in a LangChain agent, no proxy involved
+- Part B: point LangChain's `ChatOpenAI` at your Stage 5 to 9 proxy and rebuild the same agent
+- Compare the two in a short write-up: what each path gives you and what it does not
+- Feature learned: exactly the distinction covered in the research doc, now proven with working code instead of just reading about it
 
 ---
 
-## Part 4: langchain-litellm — Can You Get LiteLLM's Full Potential Through It?
+## Capstone Project — Gateway-Backed Agentic RAG System
 
-Short answer: **partially, and it is important to understand exactly where the line sits.**
+Combine everything into one repository that extends your existing Agentic RAG project:
 
-`langchain-litellm` is an official LangChain integration package (`pip install langchain-litellm`) maintained under the `langchain-ai` GitHub org. It gives you:
+- LangChain (or LangGraph) agent with multi-turn memory, same as your current project
+- All model calls routed through your LiteLLM proxy, not called directly
+- Per-team virtual keys (for example one key for "retrieval" calls, one for "generation" calls) with separate budgets
+- Guardrails on both directions: input PII filtering, output content checks
+- Semantic caching enabled for repeated queries
+- Full request tracing in Langfuse
+- Fallback chain: primary model to a cheaper backup model on failure
+- Deployed with Docker Compose (proxy plus your app plus Redis plus Postgres), documented with a professional README, architecture diagram, and a short section explaining the langchain-litellm versus proxy-via-ChatOpenAI design decision you made and why
 
-- `ChatLiteLLM` — a LangChain chat model wrapper around `litellm.completion()`, so you get LangChain's chain, tool calling, and structured output interface while LiteLLM handles the provider translation underneath
-- `ChatLiteLLMRouter` — wraps `litellm.Router`, so you get load balancing and fallback across deployments inside a LangChain chat model
-- `LiteLLMEmbeddings` and `LiteLLMEmbeddingsRouter` — same idea for embedding models
-- `LiteLLMOCRLoader` — a document loader that calls a LiteLLM **proxy's** OCR endpoint
+This capstone is the kind of project that reads as "engineer who builds production infrastructure," not "engineer who called an API," which fits directly into the GitHub positioning gap you have been working on closing.
 
-What this package does **not** give you directly:
-- Virtual key management, per-team budgets, SSO, RBAC, audit logs
-- Guardrail configuration (PII filters, moderation, prompt injection checks)
-- The admin dashboard
-- Semantic caching configuration
+---
 
-That is expected and not a gap in the package. Those are **proxy-server** features. They are configured once in the LiteLLM proxy's `config.yaml` and enforced server-side, not per client library. The way you reach the full feature set from LangChain is not through `langchain-litellm` at all. It is through LangChain's plain `ChatOpenAI` class, pointed at your running LiteLLM proxy:
+## Suggested Order of Study
 
-```python
-from langchain_openai import ChatOpenAI
+1. Stages 0 to 4: one to two days, all local, no Docker needed yet
+2. Stages 5 to 9: three to five days, this is where the real gateway skill is built
+3. Stage 10: half a day, mostly a comparison exercise
+4. Capstone: treat it as its own repository with its own README, not a folder inside an existing repo
 
-llm = ChatOpenAI(
-    model="gpt-4",
-    base_url="http://localhost:4000",   # your LiteLLM proxy
-    api_key="sk-litellm-virtual-key",   # a virtual key issued by the proxy
-)
-```
-
-Because the LiteLLM proxy exposes an OpenAI-compatible API, this single line gets you every governance feature (budgets, guardrails, caching, virtual keys) for free, with zero LiteLLM-specific LangChain code at all.
-
-So the practical answer to your question:
-
-- Use **`langchain-litellm`** (`ChatLiteLLM`, `ChatLiteLLMRouter`) when you want LiteLLM's multi-provider SDK and in-process routing directly inside a LangChain app, without running a standalone proxy server. This is the lighter, embedded path.
-- Use **`ChatOpenAI` pointed at the LiteLLM proxy** when you want the full gateway: virtual keys, team budgets, guardrails, semantic caching, dashboard, audit logs. This is the production, governed path.
-- The two are not mutually exclusive. Many real setups run the proxy for governance and still use `langchain-litellm`'s router class in application code that talks directly to providers for latency sensitive paths.
-
-This is also a genuinely good thing to demonstrate in your GitHub projects, since it shows you understand gateway architecture at a level past "I called an API."
+If you want, I can start with Stage 1 code right now, or set up the Stage 5 Docker Compose file and `config.yaml` so you have a working proxy to experiment with today.
