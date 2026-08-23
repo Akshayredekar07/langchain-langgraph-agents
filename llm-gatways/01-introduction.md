@@ -6,6 +6,8 @@
 
 An LLM gateway is a piece of infrastructure that sits between your application and the model providers (OpenAI, Anthropic, AWS Bedrock, Google Vertex, Groq, Mistral, and so on). It speaks the OpenAI API format on one side and translates to every provider on the other.
 
+![AI Gateways](gateway.svg)
+
 <strong>Why it exists</strong>
 
 Every provider has a different SDK, a different auth scheme, a different streaming protocol, different rate limits, and a different failure mode. If you call all of them directly from your application, you write the same glue five times and you still have no observability, no budgets, no failover, and no guardrails.
