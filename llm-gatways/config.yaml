@@ -1,0 +1,231 @@
+# # model_list:
+# #   - model_name: ox-alpha
+# #     litellm_params:
+# #       model: openrouter/stealth/ox-alpha
+# #       api_key: os.environ/OPENROUTER_API_KEY
+
+# #   - model_name: smart
+# #     litellm_params:
+# #       model: openrouter/stealth/ox-alpha
+# #       api_key: os.environ/OPENROUTER_API_KEY
+
+# #   - model_name: deepseek-flash
+# #     litellm_params:
+# #       model: openrouter/deepseek/deepseek-v4-flash-0731
+# #       api_key: os.environ/OPENROUTER_API_KEY
+
+# #   - model_name: glm-5.3
+# #     litellm_params:
+# #       model: openrouter/z-ai/glm-5.3
+# #       api_key: os.environ/OPENROUTER_API_KEY
+
+# #   - model_name: glm-5.2-free
+# #     litellm_params:
+# #       model: openrouter/z-ai/glm-5.2:free
+# #       api_key: os.environ/OPENROUTER_API_KEY
+
+# #   - model_name: grok-4.6
+# #     litellm_params:
+# #       model: openrouter/x-ai/grok-4.6
+# #       api_key: os.environ/OPENROUTER_API_KEY
+
+# #   - model_name: lfm-embed
+# #     litellm_params:
+# #       model: openrouter/liquid/lfm-2.5-embedding-350m:free
+# #       api_key: os.environ/OPENROUTER_API_KEY
+
+# # litellm_settings:
+# #   max_tokens: 500
+# #   num_retries: 2
+
+# # router_settings:
+# #   timeout: 60
+# #   fallbacks:
+# #     - glm-5.3: ["ox-alpha", "deepseek-flash"]
+# #     - grok-4.6: ["ox-alpha", "deepseek-flash"]
+
+# # general_settings:
+# #   master_key: sk-litellm-local-1234
+# #   telemetry: false
+# #   allow_requests_on_db_unavailable: true
+
+
+
+# model_list:
+#   - model_name: fast
+#     litellm_params:
+#       model: openrouter/z-ai/glm-5.2:free
+#       api_key: os.environ/OPENROUTER_API_KEY
+
+#   - model_name: medium
+#     litellm_params:
+#       model: openrouter/deepseek/deepseek-v4-flash-0731
+#       api_key: os.environ/OPENROUTER_API_KEY
+
+#   - model_name: high
+#     litellm_params:
+#       model: openrouter/stealth/ox-alpha
+#       api_key: os.environ/OPENROUTER_API_KEY
+
+#   - model_name: max
+#     litellm_params:
+#       model: openrouter/z-ai/glm-5.3
+#       api_key: os.environ/OPENROUTER_API_KEY
+
+#   - model_name: heavy
+#     litellm_params:
+#       model: openrouter/x-ai/grok-4.6
+#       api_key: os.environ/OPENROUTER_API_KEY
+
+#   - model_name: lfm-embed
+#     litellm_params:
+#       model: openrouter/liquid/lfm-2.5-embedding-350m:free
+#       api_key: os.environ/OPENROUTER_API_KEY
+
+# litellm_settings:
+#   max_tokens: 500
+#   num_retries: 2
+#   drop_params: true
+
+# router_settings:
+#   timeout: 60
+#   fallbacks:
+#     - fast: ["medium", "high"]
+#     - medium: ["high", "max"]
+#     - high: ["max", "heavy"]
+#     - max: ["heavy"]
+
+# general_settings:
+#   master_key: sk-litellm-local-1234
+#   telemetry: false
+#   allow_requests_on_db_unavailable: true
+
+
+
+
+model_list:
+  # ── "fast" tier: TWO deployments = load balancing + rate limiting ──
+  - model_name: fast
+    litellm_params:
+      model: openrouter/z-ai/glm-5.2:free
+      api_key: os.environ/OPENROUTER_API_KEY
+      rpm: 20        # rate limit: max requests/minute on this deployment
+      tpm: 40000      # rate limit: max tokens/minute on this deployment
+
+  - model_name: fast
+    litellm_params:
+      model: openrouter/deepseek/deepseek-v4-flash-0731
+      api_key: os.environ/OPENROUTER_API_KEY
+      rpm: 20
+      tpm: 40000
+
+  - model_name: medium
+    litellm_params:
+      model: openrouter/deepseek/deepseek-v4-flash-0731
+      api_key: os.environ/OPENROUTER_API_KEY
+      rpm: 15
+      tpm: 30000
+
+  - model_name: high
+    litellm_params:
+      model: openrouter/stealth/ox-alpha
+      api_key: os.environ/OPENROUTER_API_KEY
+      rpm: 10
+      tpm: 20000
+
+  - model_name: max
+    litellm_params:
+      model: openrouter/z-ai/glm-5.3
+      api_key: os.environ/OPENROUTER_API_KEY
+      rpm: 5
+      tpm: 10000
+
+  - model_name: heavy
+    litellm_params:
+      model: openrouter/x-ai/grok-4.6
+      api_key: os.environ/OPENROUTER_API_KEY
+      rpm: 5
+      tpm: 10000
+
+  # ── direct providers, outside OpenRouter ──
+  - model_name: claude
+    litellm_params:
+      model: anthropic/claude-sonnet-4-6
+      api_key: os.environ/ANTHROPIC_API_KEY
+      rpm: 10
+
+  - model_name: gemini
+    litellm_params:
+      model: gemini/gemini-2.5-pro
+      api_key: os.environ/GEMINI_API_KEY
+      rpm: 10
+
+  - model_name: lfm-embed
+    litellm_params:
+      model: openrouter/liquid/lfm-2.5-embedding-350m:free
+      api_key: os.environ/OPENROUTER_API_KEY
+
+litellm_settings:
+  max_tokens: 500
+  num_retries: 2
+  drop_params: true
+  request_timeout: 60
+  set_verbose: false
+
+  # ── caching: identical repeated requests skip the provider entirely ──
+  cache: true
+  cache_params:
+    type: local        # switch to "redis" + redis_host/port for multi-instance
+    ttl: 3600           # cached response expires after 1 hour
+
+  # ── cost tracking: per-call cost still computed even without a DB ──
+  track_cost_callback: true
+
+router_settings:
+  # ── load balancing strategy across deployments sharing a model_name ──
+  routing_strategy: simple-shuffle   # weighted by rpm/tpm above
+
+  # ── auto/routing groups: different strategies per tier ──
+  routing_groups:
+    - group_name: latency-sensitive
+      models: [heavy, max]
+      routing_strategy: latency-based-routing
+      routing_strategy_args:
+        ttl: 3600
+
+  timeout: 60
+  cooldown_time: 30      # seconds a failing deployment is skipped
+  allowed_fails: 3         # failures before a deployment enters cooldown
+
+  # ── fallbacks, split by failure type ──
+  fallbacks:
+    - fast: ["medium", "high"]
+    - medium: ["high", "max"]
+    - high: ["max", "heavy"]
+    - max: ["heavy", "claude"]
+    - heavy: ["claude", "gemini"]
+
+  context_window_fallbacks:
+    - fast: ["max"]
+    - medium: ["max"]
+
+  content_policy_fallbacks:
+    - fast: ["heavy"]
+
+  retry_policy:
+    BadRequestErrorRetries: 0
+    TimeoutErrorRetries: 2
+    RateLimitErrorRetries: 3
+
+  allowed_fails_policy:
+    BadRequestErrorAllowedFails: 0
+    RateLimitErrorAllowedFails: 5
+
+  # ── global rate limit across the whole proxy, not per-deployment ──
+  global_max_parallel_requests: 50
+
+general_settings:
+  master_key: sk-litellm-local-1234
+  telemetry: false
+  allow_requests_on_db_unavailable: true   # no Postgres — required, see caveat above
+  disable_spend_logs: true                   # nothing to write without a DB anyway
