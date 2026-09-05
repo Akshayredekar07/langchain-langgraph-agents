@@ -147,23 +147,6 @@ model_list:
       rpm: 5
       tpm: 10000
 
-  # ── direct providers, outside OpenRouter ──
-  - model_name: claude
-    litellm_params:
-      model: anthropic/claude-sonnet-4-6
-      api_key: os.environ/ANTHROPIC_API_KEY
-      rpm: 10
-
-  - model_name: gemini
-    litellm_params:
-      model: gemini/gemini-2.5-pro
-      api_key: os.environ/GEMINI_API_KEY
-      rpm: 10
-
-  - model_name: lfm-embed
-    litellm_params:
-      model: openrouter/liquid/lfm-2.5-embedding-350m:free
-      api_key: os.environ/OPENROUTER_API_KEY
 
 litellm_settings:
   max_tokens: 500
