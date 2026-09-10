@@ -1,6 +1,6 @@
 import argparse
 import os
-from typing import Any, Callable
+from typing import Any, Callable, cast
 
 from dotenv import load_dotenv
 from langchain.agents import create_agent
@@ -15,13 +15,14 @@ from langchain.agents.middleware import (
     PIIMiddleware,
     SummarizationMiddleware,
     ToolCallLimitMiddleware,
-    ToolErrorMiddleware,
+    ToolErrorMiddleware, #type: ignore
     ToolRetryMiddleware,
     before_model,
     after_model,
     wrap_model_call,
 )
 from langchain.tools import tool
+from langchain_core.runnables import RunnableConfig
 from langchain_nebius import ChatNebius
 from langchain_nvidia_ai_endpoints import ChatNVIDIA
 from langgraph.checkpoint.memory import InMemorySaver
@@ -145,10 +146,13 @@ def state_update(provider: str):
         state_schema=CallState,
     )
     result = agent.invoke(
-        {
+        cast(
+            CallState,
+            {
             "messages": [{"role": "user", "content": "Hello."}],
             "model_calls": 0,
-        }
+            },
+        )
     )
     print("model_calls:", result["model_calls"])
 
@@ -345,7 +349,7 @@ def safety(provider: str):
             ),
         ],
     )
-    config = {"configurable": {"thread_id": "middleware-demo"}}
+    config: RunnableConfig = {"configurable": {"thread_id": "middleware-demo"}}
     result = agent.invoke(
         {
             "messages": [
