@@ -538,9 +538,3 @@ Expected behavior:
 2. Final assistant response returns the weather text
 
 If both steps happen, your setup is complete.
-
----
-
-*Guide covers: `langgraph-cli[inmem]` · `create-agent-chat-app v0.1.6+` · Node.js v18+ · LangSmith Studio Web UI · Python 3.11+*
-
-run examples with ui
